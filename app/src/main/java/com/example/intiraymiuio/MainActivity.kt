@@ -2,7 +2,6 @@ package com.example.intiraymiuio
 
 
 
-import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -12,15 +11,22 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
     lateinit var toolbar : ActionBar
+    private var indicadorCapitan = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        Log.i("Evaluacion",indicadorCapitan.toString())
         toolbar = supportActionBar!!
         val bottomNavigation: BottomNavigationView = findViewById(R.id.navigationView)
         bottomNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-        openFragment(FragmentoMapa())
+        this.indicadorCapitan = intent.getBooleanExtra("Capitan",false)
+        if(this.indicadorCapitan==true){
+            openFragment(FragmentoMapa())
+        }else{
+            openFragment(FragmentoMapaEspectador())
+        }
+
     }
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
@@ -28,12 +34,19 @@ class MainActivity : AppCompatActivity() {
 
             R.id.navigation_songs -> {
                 toolbar.title ="Mapa"
-                val songsFragment = FragmentoMapa.newInstance()
-                openFragment(songsFragment)
+
+                if(this.indicadorCapitan==true){
+                    val mapaFragment = FragmentoMapa.newInstance()
+                    openFragment(mapaFragment)
+                }else{
+                    val mapaFragment = FragmentoMapaEspectador.newInstance()
+                    openFragment(mapaFragment)
+                }
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_albums -> {
                 toolbar.title ="Agenda"
+
                 val agendaFragmento = FragmentoAgenda.newInstance()
                 openFragment(agendaFragmento)
                 return@OnNavigationItemSelectedListener true

@@ -4,13 +4,10 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
@@ -19,8 +16,7 @@ class LoginActivity : AppCompatActivity() {
     private var correo: String? = null
     private var contrasenia: String? = null
 
-    private var mDatabaseReference: DatabaseReference? = null
-    private var mDatabase: FirebaseDatabase? = null
+
     private var mAuth: FirebaseAuth? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,8 +30,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         botonAccesoEspectador.setOnClickListener {
-            val intentEspectador = Intent(this,MainActivity::class.java)
-            startActivity(intentEspectador)
+            irActivityEspectador()
         }
 
     }
@@ -44,8 +39,6 @@ class LoginActivity : AppCompatActivity() {
         etCorreo = findViewById<View>(R.id.nombreText) as EditText
         etContrasenia =findViewById<View>(R.id.contraseniaText) as EditText
 
-        mDatabase = FirebaseDatabase.getInstance()
-        mDatabaseReference = mDatabase!!.reference!!.child("usuarios").child("Acceso")
         mAuth = FirebaseAuth.getInstance()
     }
 
@@ -73,6 +66,13 @@ class LoginActivity : AppCompatActivity() {
 
     private fun irActivityCapitan(){
         val intentCapitan = Intent(this,MainActivity::class.java)
+        intentCapitan.putExtra("Capitan",true)
         startActivity(intentCapitan)
+    }
+
+    private fun irActivityEspectador(){
+        val intentEspectador = Intent(this,MainActivity::class.java)
+        intentEspectador.putExtra("Capitan",false)
+        startActivity(intentEspectador)
     }
 }
