@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "608333468974",
+    "firebase_url": "https://intiraymiuio.firebaseio.com",
+    "project_id": "intiraymiuio",
+    "storage_bucket": "intiraymiuio.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:608333468974:android:9aa4c1fc6b1fe211fe96bf",
+        "android_client_info": {
+          "package_name": "com.example.intiraymiuio"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "608333468974-h1knssfr0b7nlu1mc2r71fqkcd6ci2qf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvNJAwsfc8Cq--WSdKFg0PO8ez0-WzlR4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "608333468974-h1knssfr0b7nlu1mc2r71fqkcd6ci2qf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
