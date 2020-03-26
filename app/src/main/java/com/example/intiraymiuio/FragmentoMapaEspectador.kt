@@ -28,7 +28,6 @@ class FragmentoMapaEspectador :SupportMapFragment(), OnMapReadyCallback, GoogleM
         getMapAsync(this)
     }
 
-
     override fun onMapReady(map: GoogleMap) {
 
         mMap = map
@@ -95,6 +94,7 @@ class FragmentoMapaEspectador :SupportMapFragment(), OnMapReadyCallback, GoogleM
                 coordFirebase = LatLng(coorden[0],coorden[1])
                 Log.i("Coordenadas RecuE",coordFirebase.toString())
                 navegarUbicacion(coordFirebase)
+                escucharCambiosFirebase(database)
             }
         })
         return coordFirebase
@@ -104,4 +104,29 @@ class FragmentoMapaEspectador :SupportMapFragment(), OnMapReadyCallback, GoogleM
         val Marcador=mMap.addMarker(MarkerOptions().position(coordenadas).title("Capitán"))
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordenadas, nivelZoomCoordenadas))
     }
+
+    private fun escucharCambiosFirebase(firebaseData: DatabaseReference){
+        var coordFirebaseCambios:LatLng = LatLng(0.0,0.0)
+        val datosFirebaseDatabase = firebaseData.child("usuarios").child("Capitan")
+        datosFirebaseDatabase.addValueEventListener(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val children = snapshot!!.children
+                var coorden = DoubleArray(2)
+                var i = 0
+                children.forEach {
+                    coorden.set(i, it.getValue() as Double)
+                    i++
+                }
+                coordFirebaseCambios = LatLng(coorden[0],coorden[1])
+                Log.i("Coordenadas Nuevas",coordFirebaseCambios.toString())
+                navegarUbicacion(coordFirebaseCambios)
+            }
+        })
+    }
+
+
 }

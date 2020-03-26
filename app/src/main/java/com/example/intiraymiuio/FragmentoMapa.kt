@@ -51,7 +51,7 @@ class FragmentoMapa :SupportMapFragment(), OnMapReadyCallback, GoogleMap.OnPolyl
         val nivelZoom = 17F
         val marcadorInicio = mMap.addMarker(MarkerOptions().position(posicionInicial).title("Inicio de Ruta"))
         marcadorInicio.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.salida_icon))
-         mMap.addPolyline(PolylineOptions().clickable(true).add(
+        mMap.addPolyline(PolylineOptions().clickable(true).add(
             LatLng(-0.208478,-78.495465),
             LatLng(-0.210059, -78.493623),
             LatLng(-0.208106, -78.490319),
@@ -126,7 +126,7 @@ class FragmentoMapa :SupportMapFragment(), OnMapReadyCallback, GoogleMap.OnPolyl
         if (revisarPermisos()) {
 
             if (localizacionHabilitada()) {
-                    mFusedLocationClient.lastLocation.addOnCompleteListener(context as Activity) { task ->
+                mFusedLocationClient.lastLocation.addOnCompleteListener(context as Activity) { task ->
                     var location: Location? = task.result
 
                     if (location == null) {
