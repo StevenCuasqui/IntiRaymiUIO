@@ -17,12 +17,9 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.Polyline
-import com.google.android.gms.maps.model.PolylineOptions
 import android.provider.Settings
 import com.google.android.gms.location.*
+import com.google.android.gms.maps.model.*
 import com.google.firebase.database.*
 
 
@@ -50,11 +47,10 @@ class FragmentoMapa :SupportMapFragment(), OnMapReadyCallback, GoogleMap.OnPolyl
     override fun onMapReady(map: GoogleMap) {
 
         mMap = map
-        val quito = LatLng(-0.208478,-78.495465)
+        val posicionInicial = LatLng(-0.208478,-78.495465)
         val nivelZoom = 17F
-        mMap.addMarker(MarkerOptions().position(quito).title("Marker in Quito"))
-
-
+        val marcadorInicio = mMap.addMarker(MarkerOptions().position(posicionInicial).title("Inicio de Ruta"))
+        marcadorInicio.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.salida_icon))
          mMap.addPolyline(PolylineOptions().clickable(true).add(
             LatLng(-0.208478,-78.495465),
             LatLng(-0.210059, -78.493623),
@@ -72,8 +68,11 @@ class FragmentoMapa :SupportMapFragment(), OnMapReadyCallback, GoogleMap.OnPolyl
             LatLng(-0.210694, -78.490180),
             LatLng(-0.211547, -78.489157)
         ))
+        val posicionFinal = LatLng(-0.211547, -78.489157)
+        val marcadorFinal = mMap.addMarker(MarkerOptions().position(posicionFinal).title("Fin de Ruta"))
+        marcadorFinal.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.llegada_icon))
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(quito, nivelZoom))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(posicionInicial, nivelZoom))
         mMap.setOnPolylineClickListener(this)
     }
 
@@ -137,7 +136,7 @@ class FragmentoMapa :SupportMapFragment(), OnMapReadyCallback, GoogleMap.OnPolyl
                         Log.i("Coordenadas en Funcion",coord.toString())
                         subirLocalizacionFirebase("Capitan",coord)
                         pedirLocalizacionNuevo()
-                        obtenerLocalizacionFirebase(database)
+
                     }
 
 
@@ -172,11 +171,11 @@ class FragmentoMapa :SupportMapFragment(), OnMapReadyCallback, GoogleMap.OnPolyl
         override fun onLocationResult(locationResult: LocationResult) {
             var mLastLocation: Location = locationResult.lastLocation
             var coordi=LatLng(mLastLocation.latitude,mLastLocation.longitude)
-            /*Log.i("Actual","Cambios")
+            Log.i("Actual","Cambios")
             Log.i("Ultima Lat",mLastLocation.latitude.toString())
-            Log.i("Ultima Lng",mLastLocation.longitude.toString())*/
+            Log.i("Ultima Lng",mLastLocation.longitude.toString())
             subirLocalizacionFirebase("Capitan",coordi)
-
+            obtenerLocalizacionFirebase(database)
         }
     }
 
@@ -184,8 +183,9 @@ class FragmentoMapa :SupportMapFragment(), OnMapReadyCallback, GoogleMap.OnPolyl
         database.child("usuarios").child(idUsuario).setValue(latitudLongitud)
     }
 
-    private fun obtenerLocalizacionFirebase(firebaseData: DatabaseReference){
-        var coordFirebase:LatLng= LatLng(0.0,0.0)
+    private fun obtenerLocalizacionFirebase(firebaseData: DatabaseReference):LatLng{
+        var coordFirebase:LatLng = LatLng(0.0,0.0)
+
         val datos = firebaseData.child("usuarios").child("Capitan")
         datos.addListenerForSingleValueEvent(object:ValueEventListener{
             override fun onCancelled(error: DatabaseError) {
@@ -194,16 +194,22 @@ class FragmentoMapa :SupportMapFragment(), OnMapReadyCallback, GoogleMap.OnPolyl
 
             override fun onDataChange(snapshot: DataSnapshot) {
                 val children = snapshot!!.children
+                var coorden = DoubleArray(2)
+                var i = 0
                 children.forEach {
-                    Log.i("Latitud",it.value.toString())
-
+                    coorden.set(i, it.getValue() as Double)
+                    i++
                 }
-                Log.i("Resultados",datos.child("latitude").toString())
-
-
+                coordFirebase = LatLng(coorden[0],coorden[1])
+                Log.i("Coordenadas Recuperadas",coordFirebase.toString())
+                navegarUbicacion(coordFirebase)
             }
         })
-
+        return coordFirebase
     }
-
+    private fun navegarUbicacion(coordenadas:LatLng){
+        val nivelZoomCoordenadas = 17F
+        val Marcador=mMap.addMarker(MarkerOptions().position(coordenadas).title("Capitán"))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordenadas, nivelZoomCoordenadas))
+    }
 }
